@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:organico/core/constants/colors_constant.dart';
+import 'package:organico/core/constants/fonts_constant.dart';
+import 'package:organico/core/constants/padding_margin_const.dart';
+import 'package:organico/core/constants/size_constant.dart';
+import 'package:organico/provider/sign_provider.dart';
+import 'package:organico/services/auth_service.dart';
+import 'package:organico/widgets/buttons_widget.dart';
+import 'package:organico/widgets/text_form_widget.dart';
+import 'package:provider/provider.dart';
+
+class SignInPage extends StatelessWidget {
+  SignInPage({Key? key}) : super(key: key);
+
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        top: true,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: PaddingMarginConst.symmetricHorizontalPM,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top,
+              child: ChangeNotifierProvider(
+                create: (context) => SignProvider(),
+                builder: (BuildContext context, Widget? child) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        "assets/images/welcome_illustration.svg",
+                        fit: BoxFit.cover,
+                        width: SizeConst.width(349),
+                        height: SizeConst.height(318.11),
+                      ),
+                      SizeConst.hBox(65.89),
+                      Text(
+                        "Welcome",
+                        style: TextStyle(
+                          fontSize: FontsConst.largeFont,
+                          color: ColorsConst.tBlack,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizeConst.hBox(16),
+                      Text(
+                        "Welcome to Organico Mobile Apps. Please fill in the field below to sign in.",
+                        style: TextStyle(
+                          fontSize: FontsConst.regularFont,
+                          color: ColorsConst.tGrey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      SizeConst.hBox(32),
+                      TextFieldW.textFormModified(
+                        context,
+                        textController: _phoneController,
+                      ),
+                      SizeConst.hBox(20),
+                      TextFieldW.textForm(
+                        label: "Password",
+                        textController: _passwordController,
+                        prefix: SvgPicture.asset(
+                          "assets/icons/lock.svg",
+                          fit: BoxFit.none,
+                        ),
+                        suffix: InkWell(
+                          child: SvgPicture.asset(
+                            "assets/icons/eye.svg",
+                            fit: BoxFit.none,
+                          ),
+                          onTap: () =>
+                              context.read<SignProvider>().changeObsecureText(),
+                        ),
+                        obscureText: context.watch<SignProvider>().obsecureText,
+                      ),
+                      SizeConst.hBox(24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          InkWell(
+                            child: Text(
+                              "Forgot Password",
+                              style: TextStyle(
+                                fontSize: FontsConst.regularFont,
+                                color: ColorsConst.pGreen,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/forgot_password");
+                            },
+                          ),
+                        ],
+                      ),
+                      SizeConst.hBox(44),
+                      ButtonsW.buttonGreen(
+                        374,
+                        52,
+                        "Sign In",
+                        () async {
+                          await AuthService().signIn(
+                            context,
+                            _phoneController.text,
+                            _passwordController.text,
+                          );
+                          // Navigator.pushNamedAndRemoveUntil(
+                          //   context,
+                          //   "/bottom_navbar",
+                          //   (route) => false,
+                          // );
+                        },
+                      ),
+                      SizeConst.hBox(16),
+                      ButtonsW.buttonGreen(
+                        374,
+                        52,
+                        "Sign Up",
+                        () => Navigator.pushNamed(context, "/sign_up"),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
